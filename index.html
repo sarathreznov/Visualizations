@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Embedding Vega-Lite</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@4.2.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.19.2"></script>
+</head>
+<body>
+<h1>Sarath Babu Sundara rajan - 801044944  </h1>
+
+<h2>Losses 2015 [$] Damage Type: All</h2>
+   <div id="vis1"></div>
+
+<h2>Losses 2015 [$] State: All</h2>
+    <div id="vis"></div>
+ 
+    
+
+
+  <script type="text/javascript">
+    vegaEmbed("#vis", "https://raw.githubusercontent.com/sarathreznov/Visualizations/master/barchart.json");
+    vegaEmbed("#vis1", "https://raw.githubusercontent.com/sarathreznov/Visualizations/master/choropleth.json");
+
+  </script>
+</body>
+</html>
