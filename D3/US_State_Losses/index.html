@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>D3: Sarath Babu Sundara rajan - 801044944 </title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.20/topojson.min.js"></script>
+
+    <style type="text/css">
+      /* No style rules here yet */
+body,html{
+    margin: 0;
+    padding: 0;
+    font-family: "Arial", sans-serif;
+    font-size: 11px;
+    text-align: center;
+  }
+/*
+#chart{
+    background-color: #F5F2EB;
+    border: 1px solid #CCC;
+  }   */
+  
+  div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 100px;
+  height: 35px;
+  padding: 2px;
+  font: 16px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+div1.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 250px;
+  height: 35px;
+  padding: 2px;
+  font: 16px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+    .bar { fill: steelblue; }
+.container {
+  float: left;
+}
+	</style>
+  </head>
+  <body>
+  
+<h1>Sarath Babu Sundara rajan - 801044944  </h1>
+<h2>Losses 2015 [$] State: All</h2>
+
+
+    <script type="text/javascript">
+      var w = 800;
+      var h = 800;
+var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+	
+      var margin = {
+          top: 5,
+          bottom: 20,
+          left: 20,
+          right: 20
+        };
+
+        var width = w - margin.left - margin.right;
+        var height = h - margin.top - margin.bottom;
+      var projection = d3.geoAlbersUsa()
+        .translate([w/2, h/2])
+       .scale([1000]);
+      var path = d3.geoPath()
+        .projection(projection);
+
+      var svg = d3.select("body")
+        .append("svg")
+        .attr("id", "chart")
+        .attr("width", w)
+        .attr("height", h)
+        .append("g")
+        .attr("tranform", "translate(0" + margin.left + "," + margin.top + ")");
+
+        var color = d3.scaleQuantile()
+          .range(["rgb(237, 248, 233)", "rgb(186, 228, 179)", "rgb(116,196,118)", "rgb(49,163,84)", "rgb(0,109,44)"]);
+
+d3.csv("https://raw.githubusercontent.com/sarathreznov/Visualizations/master/losses2015_transformed.csv", function(error, data) {
+
+var data = d3.nest()
+  .key(function(d) { return d.State_Code;})
+  .rollup(function(d) { 
+   return d3.sum(d, function(g) {return g.Amount; })
+  }).entries(data);
+
+   data.sort(function(a,b) { return b.value - a.value ;});
+  color.domain([ d3.min(data, function(d){ return d.value; }),d3.max(data, function(d){ return d.value; })]);
+//125481806
+//542361665
+//55332
+//console.log(data);
+
+d3.json("https://raw.githubusercontent.com/sarathreznov/Visualizations/master/us-10m.json", function(error, json) {
+
+        for(var i = 0; i < data.length; i++){
+          var dataState = data[i].key;
+          var dataValue = parseFloat(data[i].value);
+console.log("dataState"+dataState+"-dataValue"+dataValue);
+
+          for(var n = 0; n < json.objects.states.geometries.length; n++){
+            var jsonState = json.objects.states.geometries[n].id;
+            if(dataState == jsonState){
+              json.objects.states.geometries[n].properties = dataValue;
+              break;
+            }
+          }
+        }
+//console.log("dataState"+dataState+"-dataValue"+dataValue);
+
+		  svg.selectAll("path")
+   .data(topojson.feature(json, json.objects.states).features)
+    .enter().append("path")
+      .attr("d", path)
+.style("stroke", "white")
+            .style("stroke-width", "1")
+        .style("fill", function(d){
+           var value =d.properties;
+            if(value){
+              return color(value);
+            } else {
+			console("else");
+            return "#ccc"
+            }
+          })
+.on("mouseover", function(d) {
+ var value = d.properties;
+       div.transition()
+         .duration(5)
+         .style("opacity", 25);
+       div.html("Total Sum "+d.properties)
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+       })
+	   .on("mouseout", function(d) {
+       div.transition()
+         .duration(500)
+         .style("opacity", 0);
+       });
+	 
+
+      });
+
+})
+
+    </script>
+	
+ <h2>Losses 2015 [$] Damage Type: All</h2>
+
+    <div id="vis"></div>
+ 
+	
+	<script>
+
+
+var div1 = d3.select("body").append("div1")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+	
+
+var margin = {top: 5, right: 145, bottom: 145, left: 200},
+    width = 1000,
+    height = 800 - margin.top - margin.bottom;
+
+var format = d3.format(",.0f");
+
+var y = d3.scaleBand()
+          .range([height, 0])
+          .padding(0.1);
+
+var x = d3.scaleLinear()
+          .range([0, width]);
+         
+var svg1 = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", 
+          "translate(" + margin.left + "," + margin.top + ")");
+
+d3.csv("https://raw.githubusercontent.com/sarathreznov/Visualizations/master/losses2015_transformed.csv", function(error, data) {
+  if (error) throw error;
+ 
+    var data_new = d3.nest()
+  .key(function(d) { return d.Damage_Descp;})
+  .rollup(function(d) { 
+   return d3.sum(d, function(g) {return g.Amount; });
+  }).entries(data);
+
+  console.log(data_new);
+  
+ data_new.sort(function(a,b) { return b.value - a.value ;});
+  
+  
+  x.domain([0, d3.max(data_new, function(d) {return d.value; })]);
+  y.domain(data_new.map(function(d) { return d.key; }));
+  svg1.selectAll(".bar")
+      .data(data_new)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("width", function(d) {return x(d.value); } )
+      .attr("y", function(d) { return y(d.key); })
+      .attr("height", y.bandwidth())
+	  .on("mouseover", function(d) {
+       var value = d.value;
+       div1.transition()
+         .duration(5)
+         .style("opacity", 25);
+       div1.html(d.key +"-"+d.value)
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+       }).on("mouseout", function(d) {
+       div1.transition()
+         .duration(500)
+         .style("opacity", 0);
+       });;
+  svg1.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+  svg1.append("g")
+      .call(d3.axisLeft(y));
+});
+
+</script>
+
+  </body>
+</html>
